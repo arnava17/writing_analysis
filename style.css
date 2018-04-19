@@ -1,0 +1,22 @@
+#container {
+  padding: 30px;
+}
+canvas {
+  border: 1px solid black;
+}
+
+button {
+  margin: 10px;
+  outline: none;
+  border: none;
+  background: rgb(95, 190, 29);
+  color: white;
+  font-size: 12pt;
+  border-radius: 3px;
+  padding: 5px 10px;
+}
+
+button:hover{
+  box-shadow: 1px 1px 4px 1px gray;
+  text-shadow: 1px 1px 2px gray;
+}
