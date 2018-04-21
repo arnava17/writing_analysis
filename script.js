@@ -1,23 +1,36 @@
-var context, clickX, clickY, points, pointsMap, clickDrag, paint, currentPoint;
-
+var context, clickX, clickY, points, pointsMap, clickDrag, paint, currentPoint,
+    clickDragMap, clickXMap, clickYMap;
+context = document.getElementById('drawingCanvas').getContext("2d");
 function initialize() {
-  context = document.getElementById('drawingCanvas').getContext("2d");
-  clickX = new Array();
-  clickY = new Array();
+  clickX    = new Array();
+  clickY    = new Array();
+  clickDrag = new Array();
+
+  clickDragMap = new Map();
+  clickXMap   = new Map();
+  clickYMap   = new Map();
+
   points = new Array();
   pointsMap = new Map();
-  clickDrag = new Array();
+
   currentPoint = 0;
+  paint = false;
   redraw();
 }
 
 function addClick(x, y, dragging)
 {
   clickX.push(x);
+  clickXMap.set(currentPoint, clickX);
+
   clickY.push(y);
+  clickYMap.set(currentPoint, clickY);
+
   points.push({x,y});
   pointsMap.set(currentPoint, points);
+
   clickDrag.push(dragging);
+  clickDragMap.set(currentPoint, clickDrag);
 }
 
 $('#drawingCanvas').mousedown(function(e){
@@ -37,13 +50,25 @@ $('#drawingCanvas').mousemove(function(e){
 });
 
 $('#drawingCanvas').mouseup(function(e){
-  paint = false;
-  currentPoint++;
+  if(paint){
+    paint = false;
+    currentPoint++;
+    clickX = new Array();
+    clickY = new Array();
+    points = new Array();
+    clickDrag = new Array();
+  }
 });
 
 $('#drawingCanvas').mouseleave(function(e){
-  paint = false;
-  currentPoint++;
+  if(paint){
+    paint = false;
+    currentPoint++;
+    clickX = new Array();
+    clickY = new Array();
+    points = new Array();
+    clickDrag = new Array();
+  }
 });
 
 $('#clrBtn').click(clear);
@@ -52,25 +77,30 @@ $('#analyzeBtn').click(anaylyze);
 function redraw(){
   context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
 
-  context.strokeStyle = "#df4b26";
+  context.strokeStyle = "#0c194a";
   context.lineJoin = "round";
   context.lineWidth = 5;
 
-  for(var i=0; i < clickX.length; i++) {
-    context.beginPath();
-    if(clickDrag[i] && i){
-      context.moveTo(clickX[i-1], clickY[i-1]);
-     }else{
-       context.moveTo(clickX[i]-1, clickY[i]);
-     }
-     context.lineTo(clickX[i], clickY[i]);
-     context.closePath();
-     context.stroke();
+  for (var j = 0; j < pointsMap.size; j++) {
+    let dragArray = clickDragMap.get(j);
+    let xArray = clickXMap.get(j);
+    let yArray = clickYMap.get(j);
+    for(var i=0; i < xArray.length; i++) {
+      context.beginPath();
+      if(dragArray[i] && i){
+        context.moveTo(xArray[i-1], yArray[i-1]);
+       }else{
+         context.moveTo(xArray[i]-1, yArray[i]);
+       }
+       context.lineTo(xArray[i], yArray[i]);
+       context.closePath();
+       context.stroke();
+    }
   }
+
 }
 
 function clear() {
-  //console.log("aya");
   initialize();
 }
 
